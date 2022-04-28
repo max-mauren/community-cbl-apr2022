@@ -45,19 +45,8 @@ app.get('/api/:country/:date', (req, res, next) => {
     return;
   }
 
-  /**
- * API to get the COVID stats for a specific country 
- * 
- * COUNTRY - Uses the standard 3 letter abbreviation (for example, USA)
- * Example: http://localhost:8080/api/USA
- */
-app.get('/api/:country', (req, res, next) => {
-  // Does country exist
-  if(!data[req.params.country]) {
-    res.status(404).json({ message: `Country ${req.params.country} not found`})
-    return;
-  }
-  
+
+
   // Get copy of country data
   const countryData = data[req.params.country];
 
@@ -80,6 +69,38 @@ app.get('/api/:country', (req, res, next) => {
     return
   }
   output.data = dateData;
+
+  // Return
+  res.json(output)
+})
+
+
+/**
+ * API to get Country data alongside the most recent date of COVID stats
+ * 
+ * COUNTRY - Uses the standard 3 letter abbreviation (for example, USA)
+ * Example: http://localhost:8080/api/USA
+ * 
+ * 
+ */
+ app.get('/api/:country', (req, res, next) => {
+  // Does country exist
+  if(!data[req.params.country]) {
+    res.status(404).json({ message: `Country ${req.params.country} not found`})
+    return;
+  }
+
+  // Get copy of country data
+  const countryData = data[req.params.country];
+
+  // Get latest date
+  const dateData = countryData.data;
+  const latestDate = dateData[dateData.length - 1];
+
+  const output = {
+    ...countryData,
+    data: latestDate
+  }
 
   // Return
   res.json(output)
